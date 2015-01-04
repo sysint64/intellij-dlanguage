@@ -33,6 +33,7 @@ public class DLanguageApplicationCommandLineState extends CommandLineState {
 
         final String dmdPath = DLanguageBuildSettings.getInstance(myConfig.getProject()).getDmdPath();
         final String rdmdPath = DLanguageBuildSettings.getInstance(myConfig.getProject()).getrDmdPath();
+        final String dubPath = DLanguageBuildSettings.getInstance(myConfig.getProject()).getDubPath();
 
 
         ParametersList parametersList = commandLine.getParametersList();
@@ -44,9 +45,9 @@ public class DLanguageApplicationCommandLineState extends CommandLineState {
 
         Boolean withRun = myConfig.getRunnerParameters().isRunDmdMode();
         if(withRun){
-            commandLine.setExePath(rdmdPath);
+            commandLine.setExePath(dubPath);
         } else {
-            commandLine.setExePath(dmdPath);
+            commandLine.setExePath(rdmdPath);
         }
 
         parametersList.addParametersString(myConfig.getRunnerParameters().getFilePath());

@@ -37,7 +37,7 @@ public class DLanguageApplicationRunConfigurationEditorForm extends SettingsEdit
     private EnvironmentVariablesComponent myEnvironmentVariables;
 
     public DLanguageApplicationRunConfigurationEditorForm(final Project project) {
-        initDartFileTextWithBrowse(project, myFileField);
+        initDFileTextWithBrowse(project, myFileField);
 
         myWorkingDirectory.addBrowseFolderListener(ExecutionBundle.message("select.working.directory.message"), null, project,
                 FileChooserDescriptorFactory.createSingleFolderDescriptor());
@@ -50,8 +50,8 @@ public class DLanguageApplicationRunConfigurationEditorForm extends SettingsEdit
         myEnvironmentVariables.setAnchor(myFileLabel);
     }
 
-    public static void initDartFileTextWithBrowse(final @NotNull Project project,
-                                                  final @NotNull TextFieldWithBrowseButton textWithBrowse) {
+    public static void initDFileTextWithBrowse(final @NotNull Project project,
+                                               final @NotNull TextFieldWithBrowseButton textWithBrowse) {
         textWithBrowse.getButton().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 final String initialPath = FileUtil.toSystemIndependentName(textWithBrowse.getText().trim());

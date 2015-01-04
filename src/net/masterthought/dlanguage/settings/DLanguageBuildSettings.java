@@ -47,6 +47,40 @@ public class DLanguageBuildSettings implements PersistentStateComponent<DLanguag
         myBuildOptions.myrDmdPath = path;
     }
 
+    public boolean isDubEnabled() {
+        return myBuildOptions.myUseDub;
+    }
+
+    public void setUseDub(boolean useDub) {
+        myBuildOptions.myUseDub = useDub;
+    }
+
+    public boolean isInstallDubDependenciesEnabled() {
+        return myBuildOptions.myInstallDubDependencies;
+    }
+
+    public void setInstallDubDependencies(boolean install) {
+        myBuildOptions.myInstallDubDependencies = install;
+    }
+
+    @NotNull
+    public String getDubPath() {
+        return myBuildOptions.myDubPath;
+    }
+
+    public void setDubPath(@NotNull String path) {
+        myBuildOptions.myDubPath = path;
+    }
+
+    @NotNull
+    public String getDubFlags() {
+        return myBuildOptions.myDubFlags;
+    }
+
+    public void setDubFlags(@NotNull String flags) {
+        myBuildOptions.myDubFlags = flags;
+    }
+
     @NotNull
     public static DLanguageBuildSettings getInstance(@NotNull Project project) {
         final DLanguageBuildSettings persisted = ServiceManager.getService(project, DLanguageBuildSettings.class);

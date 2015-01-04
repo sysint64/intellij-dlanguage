@@ -13,11 +13,11 @@ public abstract class DLanguageRunConfigurationBase extends AbstractRunConfigura
         super(project, factory);
     }
 
-    protected void requireDmd() throws RuntimeConfigurationException {
+    protected void requireDub() throws RuntimeConfigurationException {
         final DLanguageBuildSettings buildSettings = DLanguageBuildSettings.getInstance(getProject());
-        final String dmdPath = buildSettings.getDmdPath();
-        if (dmdPath.isEmpty()) {
-            throw new RuntimeConfigurationError("Path to dmd is not set.");
+        final String dubPath = buildSettings.getDubPath();
+        if (dubPath.isEmpty()) {
+            throw new RuntimeConfigurationError("Path to dub is not set.");
         }
     }
 

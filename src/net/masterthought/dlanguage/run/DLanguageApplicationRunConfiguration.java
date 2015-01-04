@@ -43,7 +43,7 @@ public class DLanguageApplicationRunConfiguration extends DLanguageRunConfigurat
      */
     @Override
     public void checkConfiguration() throws RuntimeConfigurationException {
-        requireDmd();
+        requireDub();
     }
 
     @Nullable
