@@ -2,6 +2,7 @@ package net.masterthought.dlanguage.psi;
 
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.TokenSet;
+import net.masterthought.dlanguage.psi.interfaces.DLanguageTypes;
 
 public class DTokenSets {
 

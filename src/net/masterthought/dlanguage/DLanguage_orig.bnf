@@ -9,7 +9,7 @@
   psiPackage="net.masterthought.dlanguage.psi"
   psiImplPackage="net.masterthought.dlanguage.psi.impl"
 
-  elementTypeHolderClass="net.masterthought.dlanguage.psi.DLanguageTypes"
+  elementTypeHolderClass="net.masterthought.dlanguage.psi.interfaces.DLanguageTypes"
   elementTypeClass="net.masterthought.dlanguage.psi.DElementType"
   tokenTypeClass="net.masterthought.dlanguage.psi.DTokenType"
 

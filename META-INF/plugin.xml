@@ -27,6 +27,9 @@
         <fileTypeFactory implementation="net.masterthought.dlanguage.DLanguageFileTypeFactory"/>
         <lang.parserDefinition language="D"
                                implementationClass="net.masterthought.dlanguage.DLanguageParserDefinition"/>
+
+        <stubElementTypeHolder class="net.masterthought.dlanguage.parser.DStubElementTypes"/>
+        
         <lang.syntaxHighlighterFactory key="D"
                                        implementationClass="net.masterthought.dlanguage.highlighting.DHighlighterFactory"/>
         <colorSettingsPage implementation="net.masterthought.dlanguage.settings.DColorSettingsPage"/>
@@ -41,6 +44,8 @@
 
         <programRunner implementation="net.masterthought.dlanguage.run.DLanguageRunner"/>
 
+        <lang.foldingBuilder language="D" implementationClass="net.masterthought.dlanguage.features.DFoldingBuilder"/>
+        
         <!-- Project settings -->
 
         <!-- Tab under compiler in IntelliJ -> Preferences -->

@@ -9,7 +9,7 @@
   psiPackage="net.masterthought.dlanguage.psi"
   psiImplPackage="net.masterthought.dlanguage.psi.impl"
 
-  elementTypeHolderClass="net.masterthought.dlanguage.psi.DLanguageTypes"
+  elementTypeHolderClass="net.masterthought.dlanguage.psi.interfaces.DLanguageTypes"
   elementTypeClass="net.masterthought.dlanguage.psi.DLanguageElementType"
   tokenTypeClass="net.masterthought.dlanguage.psi.DLanguageTokenType"
 
@@ -1721,6 +1721,7 @@ StructMemberInitializer ::=
 FuncDeclaration ::=
     StorageClasses? BasicType FuncDeclarator (FunctionBody |';'| '=')?
     | AutoFuncDeclaration
+
 
 AutoFuncDeclaration ::=
     StorageClasses Identifier FuncDeclaratorSuffix FunctionBody?

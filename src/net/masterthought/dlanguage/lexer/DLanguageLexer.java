@@ -3,7 +3,7 @@
 package net.masterthought.dlanguage.lexer;
 import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
-import static net.masterthought.dlanguage.psi.DLanguageTypes.*;
+import static net.masterthought.dlanguage.psi.interfaces.DLanguageTypes.*;
 
 
 /**
