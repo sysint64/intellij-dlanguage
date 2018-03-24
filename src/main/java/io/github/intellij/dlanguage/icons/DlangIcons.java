@@ -33,4 +33,9 @@ public class DlangIcons {
     public static final Icon NODE_PROPERTY_SETTER = IconLoader.getIcon("/icons/nodes/propertySetter.png");
     public static final Icon NODE_ALIAS = IconLoader.getIcon("/icons/nodes/alias.png");
     public static final Icon NODE_MIXIN = IconLoader.getIcon("/icons/nodes/mixin.png");
+
+    public static final Icon IMPLEMENTED = AllIcons.Gutter.ImplementedMethod;
+    public static final Icon IMPLEMENTING_METHOD = AllIcons.Gutter.ImplementingMethod;
+    public static final Icon OVERRIDING_METHOD = AllIcons.Gutter.OverridingMethod;
+    public static final Icon RECURSIVE_CALL = AllIcons.Gutter.RecursiveMethod;
 }

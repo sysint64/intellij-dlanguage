@@ -71,6 +71,12 @@
                            implementationClass="io.github.intellij.dlanguage.highlighting.annotation.external.DExternalAnnotator"/>
         <lang.documentationProvider language="D"
                                     implementationClass="io.github.intellij.dlanguage.features.DDocumentationProvider"/>
+
+        <!-- Line Marker Providers -->
+
+        <codeInsight.lineMarkerProvider language="D"
+                                        implementationClass="io.github.intellij.dlanguage.linemarkers.DImplsLineMarkerProvider"/>
+
         <!-- Refactoring -->
 
         <lang.refactoringSupport language="D"
