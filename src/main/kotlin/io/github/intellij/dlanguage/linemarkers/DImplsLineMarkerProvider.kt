@@ -19,25 +19,26 @@ class DImplsLineMarkerProvider : LineMarkerProvider {
             if (el !is FunctionDeclaration)
                 continue
 
-            val targets = getTargets(el)
+            val (source, target) = getTargets(el) ?: continue
 
-            if (targets == null || targets.isEmpty())
-                continue
-
-            val info = NavigationGutterIconBuilder
+            val infoBuilder = NavigationGutterIconBuilder
                 .create(DlangIcons.IMPLEMENTING_METHOD)
-                .setTargets(targets)
+                .setTarget(target)
                 .setPopupTitle("Go to declaration")
-                .setTooltipText("Implements function")
-                .createLineMarkerInfo(el)
 
-            result.add(info)
+            val identifier = PsiTreeUtil.findChildOfType(source, Identifier::class.java)
+
+            if (identifier != null) {
+                infoBuilder.setTooltipText("Implements function in '${identifier.text.trim()}'")
+            } else {
+                infoBuilder.setTooltipText("Implements function")
+            }
+
+            result.add(infoBuilder.createLineMarkerInfo(el))
         }
     }
 
-    private fun getTargets(declaration: FunctionDeclaration): Set<PsiElement>? {
-        val set = HashSet<PsiElement>()
-
+    private fun getTargets(declaration: FunctionDeclaration): Pair<PsiElement, PsiElement>? {
         val classDeclarationParent = PsiTreeUtil.findFirstParent(declaration) {
             it is ClassDeclaration
         } ?: return null
@@ -51,28 +52,29 @@ class DImplsLineMarkerProvider : LineMarkerProvider {
             val baseIdentifier = PsiTreeUtil.findChildOfType(cls, Identifier::class.java) ?: continue
             val nodes = resolver.findDefinitionNode(baseIdentifier, false)
 
-            nodes.mapNotNullTo(set) { findDeclaration(declaration, it.parent) }
-//            set.addAll(nodes)
+            for (node in nodes) {
+                val pair = findDeclaration(declaration, node.parent)
+                if (pair != null)
+                    return pair
+            }
         }
 
-//        resolver.findDefinitionNode(identifier, false)
-
-        return set
+        return null
     }
 
-    private fun findDeclaration(function: FunctionDeclaration, psi: PsiElement): PsiElement? {
+    private fun findDeclaration(function: FunctionDeclaration, psi: PsiElement): Pair<PsiElement, PsiElement>? {
         return when (psi) {
             is InterfaceDeclaration -> findDeclarationInInterface(function, psi)
             else -> null
         }
     }
 
-    private fun findDeclarationInInterface(function: FunctionDeclaration, declaration: InterfaceDeclaration): PsiElement? {
+    private fun findDeclarationInInterface(function: FunctionDeclaration, declaration: InterfaceDeclaration): Pair<PsiElement, PsiElement>? {
         val methods = PsiTreeUtil.findChildrenOfType(declaration, FunctionDeclaration::class.java)
 
         for (method in methods) {
             if (equalFunctionDeclarations(method, function))
-                return method
+                return Pair(declaration, method)
         }
 
         // Declaration was not found, try go deeper
@@ -142,6 +144,6 @@ class DImplsLineMarkerProvider : LineMarkerProvider {
     }
 
     private fun isBuiltinType(type: Type): Boolean {
-        return !PsiTreeUtil.findChildrenOfType(type, DLanguageBuiltinType::class.java).isEmpty()
+        return PsiTreeUtil.findChildOfType(type, DLanguageBuiltinType::class.java) != null
     }
 }
