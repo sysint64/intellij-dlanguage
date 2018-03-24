@@ -6,6 +6,7 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import io.github.intellij.dlanguage.icons.DlangIcons
+import io.github.intellij.dlanguage.psi.DLanguageBuiltinType
 import io.github.intellij.dlanguage.resolve.DResolveUtil
 import io.github.intellij.dlanguage.utils.*
 
@@ -92,9 +93,55 @@ class DImplsLineMarkerProvider : LineMarkerProvider {
         return null
     }
 
-    private fun equalFunctionDeclarations(method: FunctionDeclaration, function: FunctionDeclaration) : Boolean {
-        val methodIdentifier = method.identifier ?: return false
+    private fun equalFunctionDeclarations(f1: FunctionDeclaration, f2: FunctionDeclaration): Boolean {
+        if (!equalTypes(f1.type, f2.type))
+            return false
 
-        return methodIdentifier.name == function.name
+        val f1Parameters = PsiTreeUtil.findChildrenOfType(f1, Parameter::class.java).toTypedArray()
+        val f2Parameters = PsiTreeUtil.findChildrenOfType(f2, Parameter::class.java).toTypedArray()
+
+        if (f1Parameters.size != f2Parameters.size)
+            return false
+
+        for (i in 0 until f1Parameters.size) {
+            if (!equalTypes(f1Parameters[i].type, f2Parameters[i].type))
+                return false
+        }
+
+        return f1.name == f2.name
+    }
+
+    private fun equalTypes(t1: Type?, t2: Type?): Boolean {
+        return when {
+            t1 == null && t2 == null -> true
+            t1 == null || t2 == null -> false
+            isBuiltinType(t1) && isBuiltinType(t2) -> t1.text.trim() == t2.text.trim()
+            else -> {
+                val resolver1 = DResolveUtil.getInstance(t1.project)
+                val resolver2 = DResolveUtil.getInstance(t2.project)
+
+                val t1Identifier = PsiTreeUtil.findChildOfType(t1, Identifier::class.java) ?: return false
+                val t2Identifier = PsiTreeUtil.findChildOfType(t2, Identifier::class.java) ?: return false
+
+                val set1 = resolver1.findDefinitionNode(t1Identifier, false)
+                val set2 = resolver2.findDefinitionNode(t2Identifier, false)
+
+                if (set1.isEmpty() || set2.isEmpty())
+                    return false
+
+                for (i1 in set1) {
+                    for (i2 in set2) {
+                        if (i1 == i2)
+                            return true
+                    }
+                }
+
+                false
+            }
+        }
+    }
+
+    private fun isBuiltinType(type: Type): Boolean {
+        return !PsiTreeUtil.findChildrenOfType(type, DLanguageBuiltinType::class.java).isEmpty()
     }
 }
