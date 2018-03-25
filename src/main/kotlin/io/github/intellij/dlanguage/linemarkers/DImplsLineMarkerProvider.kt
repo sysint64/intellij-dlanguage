@@ -6,8 +6,8 @@ import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import io.github.intellij.dlanguage.icons.DlangIcons
-import io.github.intellij.dlanguage.psi.DLanguageBuiltinType
 import io.github.intellij.dlanguage.resolve.DResolveUtil
+import io.github.intellij.dlanguage.types.equalTypes
 import io.github.intellij.dlanguage.utils.*
 
 class DImplsLineMarkerProvider : LineMarkerProvider {
@@ -111,39 +111,5 @@ class DImplsLineMarkerProvider : LineMarkerProvider {
         }
 
         return f1.name == f2.name
-    }
-
-    private fun equalTypes(t1: Type?, t2: Type?): Boolean {
-        return when {
-            t1 == null && t2 == null -> true
-            t1 == null || t2 == null -> false
-            isBuiltinType(t1) && isBuiltinType(t2) -> t1.text.trim() == t2.text.trim()
-            else -> {
-                val resolver1 = DResolveUtil.getInstance(t1.project)
-                val resolver2 = DResolveUtil.getInstance(t2.project)
-
-                val t1Identifier = PsiTreeUtil.findChildOfType(t1, Identifier::class.java) ?: return false
-                val t2Identifier = PsiTreeUtil.findChildOfType(t2, Identifier::class.java) ?: return false
-
-                val set1 = resolver1.findDefinitionNode(t1Identifier, false)
-                val set2 = resolver2.findDefinitionNode(t2Identifier, false)
-
-                if (set1.isEmpty() || set2.isEmpty())
-                    return false
-
-                for (i1 in set1) {
-                    for (i2 in set2) {
-                        if (i1 == i2)
-                            return true
-                    }
-                }
-
-                false
-            }
-        }
-    }
-
-    private fun isBuiltinType(type: Type): Boolean {
-        return PsiTreeUtil.findChildOfType(type, DLanguageBuiltinType::class.java) != null
     }
 }
