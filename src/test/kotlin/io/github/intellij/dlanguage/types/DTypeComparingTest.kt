@@ -1,6 +1,7 @@
 package io.github.intellij.dlanguage.types
 
 import io.github.intellij.dlanguage.DLightPlatformCodeInsightFixtureTestCase
+import io.github.intellij.dlanguage.utils.TemplateSingleArgument
 import io.github.intellij.dlanguage.utils.Type
 import junit.framework.Assert
 import org.intellij.lang.annotations.Language
@@ -15,7 +16,7 @@ class DTypeComparingTest : DLightPlatformCodeInsightFixtureTestCase("types/compa
         Assert.assertEquals(equals, equalTypes(typeA, typeB))
     }
 
-    private fun getType(marker: String) : Type {
+    private fun getType(marker: String): Type {
         val (type) = findElementAndDataInEditor<Type>(marker = marker)
         return type
     }
@@ -53,6 +54,37 @@ class DTypeComparingTest : DLightPlatformCodeInsightFixtureTestCase("types/compa
           //^
         """)
         val type = getType("^")
+        Assert.assertFalse(isBuiltinType(type))
+    }
+
+    fun `test generic type with builtin types should not be builtin type`() {
+        InlineFile("""
+            interface Generic(T) {}
+            Generic!(int) a;
+          //^
+        """)
+        val type = getType("^")
+        Assert.assertFalse(isBuiltinType(type))
+    }
+
+    fun `test builtin type in template single argument should be builtin type`() {
+        InlineFile("""
+            interface Generic(T) {}
+            Generic!int a;
+                  //^
+        """)
+        val (type) = findElementAndDataInEditor<TemplateSingleArgument>()
+        Assert.assertTrue(isBuiltinType(type))
+    }
+
+    fun `test struct in template single argument should not be builtin type`() {
+        InlineFile("""
+            interface Generic(T) {}
+            struct C {}
+            Generic!C a;
+                  //^
+        """)
+        val (type) = findElementAndDataInEditor<TemplateSingleArgument>()
         Assert.assertFalse(isBuiltinType(type))
     }
 
@@ -148,7 +180,7 @@ class DTypeComparingTest : DLightPlatformCodeInsightFixtureTestCase("types/compa
       //^b
     """, equals = false)
 
-    fun `test same generic classes should be equals`() = doTest("""
+        fun `test same generic classes should be equals`() = doTest("""
         class Generic(T) {
             const T value;
         }

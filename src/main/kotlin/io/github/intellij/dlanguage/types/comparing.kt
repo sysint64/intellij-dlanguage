@@ -5,8 +5,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import io.github.intellij.dlanguage.psi.DLanguageBuiltinType
 import io.github.intellij.dlanguage.psi.DlangTypes
 import io.github.intellij.dlanguage.resolve.DResolveUtil
-import io.github.intellij.dlanguage.utils.Identifier
-import io.github.intellij.dlanguage.utils.Type
+import io.github.intellij.dlanguage.utils.*
 
 fun equalTypes(t1: PsiElement?, t2: PsiElement?): Boolean {
     return when {
@@ -37,6 +36,9 @@ private fun checkFunctionLiterals(t1: PsiElement, t2: PsiElement): Boolean {
 }
 
 private fun checkReferences(t1: PsiElement, t2: PsiElement): Boolean {
+    if (!checkTemplateArgumentsList(t1, t2))
+        return false
+
     val resolver1 = DResolveUtil.getInstance(t1.project)
     val resolver2 = DResolveUtil.getInstance(t2.project)
 
@@ -59,6 +61,48 @@ private fun checkReferences(t1: PsiElement, t2: PsiElement): Boolean {
     return false
 }
 
+fun getTemplateArgumentList(psi: PsiElement) : TemplateArgumentList? {
+    return PsiTreeUtil.findChildOfType(psi, TemplateArgumentList::class.java)
+}
+
+fun getTemplateArguments(psi: PsiElement) : TemplateArguments? {
+    return PsiTreeUtil.findChildOfType(psi, TemplateArguments::class.java)
+}
+
+private fun checkTemplateArgumentsList(t1: PsiElement, t2: PsiElement): Boolean {
+    val a1 = getTemplateArguments(t1)
+    val a2 = getTemplateArguments(t2)
+
+    if (a1 == null && a2 == null)
+        return true
+
+    if (a1 == null || a2 == null)
+        return false
+
+    if (a1.templateSingleArgument != null) {
+        if (a2.templateSingleArgument == null)
+            return false
+
+        return equalTypes(a1.templateSingleArgument, a2.templateSingleArgument)
+    }
+
+    val a1List = getTemplateArgumentList(a1) ?: return false
+    val a2List = getTemplateArgumentList(a2) ?: return false
+
+    if (a1List.templateArguments.size != a2List.templateArguments.size)
+        return false
+
+    for (i in 0 until a1List.templateArguments.size) {
+        val arg1 = a1List.templateArguments[i]
+        val arg2 = a2List.templateArguments[i]
+
+        if (!equalTypes(arg1.type, arg2.type))
+            return false
+    }
+
+    return true
+}
+
 fun isFunctionLiteral(type: PsiElement): Boolean {
     if (type !is Type)
         return false
@@ -75,6 +119,14 @@ fun isFunctionLiteral(type: PsiElement): Boolean {
 }
 
 fun isBuiltinType(type: PsiElement): Boolean {
-    return PsiTreeUtil.findChildOfType(type, DLanguageBuiltinType::class.java) != null &&
-        !isFunctionLiteral(type)
+    return when {
+        type is TemplateSingleArgument -> {
+            // Not sure about this, but with builin types we don't have identifier
+            PsiTreeUtil.findChildOfType(type, Identifier::class.java) == null
+        }
+        isFunctionLiteral(type) -> false
+        type is Type -> type.type_2?.children?.firstOrNull() is DLanguageBuiltinType
+        type is Type_2 -> type.children.firstOrNull() is DLanguageBuiltinType
+        else -> false
+    }
 }
