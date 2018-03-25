@@ -181,7 +181,7 @@ class DTypeComparingTest : DLightPlatformCodeInsightFixtureTestCase("types/compa
       //^b
     """, equals = true)
 
-    fun `test different generic classes should be equals`() = doTest("""
+    fun `test different generic classes should not be equals`() = doTest("""
         class Generic(T) {
             const T value;
         }
@@ -192,7 +192,7 @@ class DTypeComparingTest : DLightPlatformCodeInsightFixtureTestCase("types/compa
       //^b
     """, equals = false)
 
-    fun `test different generic structs should be equals`() = doTest("""
+    fun `test different generic structs should not be equals`() = doTest("""
         struct Generic(T) {
             const T value;
         }
@@ -203,7 +203,7 @@ class DTypeComparingTest : DLightPlatformCodeInsightFixtureTestCase("types/compa
       //^b
     """, equals = false)
 
-    fun `test different generic interfaces should be equals`() = doTest("""
+    fun `test different generic interfaces should not be equals`() = doTest("""
         interface Generic(T) {
             const T value;
         }
@@ -211,6 +211,32 @@ class DTypeComparingTest : DLightPlatformCodeInsightFixtureTestCase("types/compa
         Generic!int a;
       //^a
         Generic!long b;
+      //^b
+    """, equals = false)
+
+    fun `test same complex generic classes should be equals`() = doTest("""
+        class Generic(T) {
+            const T value;
+        }
+
+        class Map(K, V) {}
+
+        Map!(long, Map!(long, Generic!int)) a;
+      //^a
+        Map!(long, Map!(long, Generic!int)) b;
+      //^b
+    """, equals = true)
+
+    fun `test different complex generic classes should not be equals`() = doTest("""
+        class Generic(T) {
+            const T value;
+        }
+
+        class Map(K, V) {}
+
+        Map!(long, Map!(long, Generic!int)) a;
+      //^a
+        Map!(long, Map!(long, Generic!long)) b;
       //^b
     """, equals = false)
 }
