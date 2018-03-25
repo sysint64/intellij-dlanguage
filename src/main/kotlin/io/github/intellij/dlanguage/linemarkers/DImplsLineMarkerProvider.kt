@@ -7,7 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import io.github.intellij.dlanguage.icons.DlangIcons
 import io.github.intellij.dlanguage.resolve.DResolveUtil
-import io.github.intellij.dlanguage.types.equalTypes
+import io.github.intellij.dlanguage.types.equalFunctionDeclarations
 import io.github.intellij.dlanguage.utils.*
 
 class DImplsLineMarkerProvider : LineMarkerProvider {
@@ -93,23 +93,5 @@ class DImplsLineMarkerProvider : LineMarkerProvider {
         }
 
         return null
-    }
-
-    private fun equalFunctionDeclarations(f1: FunctionDeclaration, f2: FunctionDeclaration): Boolean {
-        if (!equalTypes(f1.type, f2.type))
-            return false
-
-        val f1Parameters = PsiTreeUtil.findChildrenOfType(f1, Parameter::class.java).toTypedArray()
-        val f2Parameters = PsiTreeUtil.findChildrenOfType(f2, Parameter::class.java).toTypedArray()
-
-        if (f1Parameters.size != f2Parameters.size)
-            return false
-
-        for (i in 0 until f1Parameters.size) {
-            if (!equalTypes(f1Parameters[i].type, f2Parameters[i].type))
-                return false
-        }
-
-        return f1.name == f2.name
     }
 }
